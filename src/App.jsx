@@ -1,27 +1,39 @@
 import { useState, useEffect } from 'react'
+import { Routes, Route } from 'react-router-dom'
 import './App.css'
+import Navbar from './components/Navbar'
+import Home from './pages/Home'
+import CartPage from './pages/CartPage'
 
 function App() {
   const [meals, setMeals] = useState([]);
-  const [cartItems, setCartItems] = useState([]); // مصفوفة لتخزين الوجبات المضافة
+  // Load cart from localStorage on initialization
+  const [cartItems, setCartItems] = useState(() => {
+    const storedCart = localStorage.getItem('cartItems');
+    return storedCart ? JSON.parse(storedCart) : [];
+  });
   const [isCartOpen, setIsCartOpen] = useState(false); // حالة فتح/إغلاق السلة
   const [loading, setLoading] = useState(false);
   const [activeCat, setActiveCat] = useState('Beef'); // التصنيف النشط
 
+  // Auto-save cart to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('cartItems', JSON.stringify(cartItems));
+  }, [cartItems]);
   const categories = ['Beef', 'Chicken', 'Dessert', 'Seafood', 'Pasta', 'Vegan', 'Breakfast', 'Pizza'];
 
   // دالة جلب البيانات حسب التصنيف أو البحث
   const fetchMeals = async (query = '', isCategory = false) => {
     setLoading(true);
     let url = isCategory
-      if (query === 'Pizza') {
-    // لأن البيتزا ليست تصنيفاً رسمياً، نبحث عنها بالاسم
-    url = `https://www.themealdb.com/api/json/v1/1/search.php?s=pizza`;
-  } else if (isCategory) {
-    url = `https://www.themealdb.com/api/json/v1/1/filter.php?c=${query}`;
-  } else {
-    url = `https://www.themealdb.com/api/json/v1/1/search.php?s=${query}`;
-  }
+    if (query === 'Pizza') {
+      // لأن البيتزا ليست تصنيفاً رسمياً، نبحث عنها بالاسم
+      url = `https://www.themealdb.com/api/json/v1/1/search.php?s=pizza`;
+    } else if (isCategory) {
+      url = `https://www.themealdb.com/api/json/v1/1/filter.php?c=${query}`;
+    } else {
+      url = `https://www.themealdb.com/api/json/v1/1/search.php?s=${query}`;
+    }
     try {
       const res = await fetch(url);
       const data = await res.json();
@@ -43,9 +55,16 @@ function App() {
     }
   }, [activeCat]);
 
-  // إضافة للسلة
+  // إضافة للسلة (مع الكمية)
   const addToCart = (meal) => {
-    setCartItems([...cartItems, meal]);
+    const existingItem = cartItems.find(item => item.idMeal === meal.idMeal);
+    if (existingItem) {
+      setCartItems(cartItems.map(item =>
+        item.idMeal === meal.idMeal ? { ...item, qty: item.qty + 1 } : item
+      ));
+    } else {
+      setCartItems([...cartItems, { ...meal, qty: 1 }]);
+    }
   };
 
   // وظيفة عرض الكل (تجلب كمية أكبر من البيانات)
@@ -67,79 +86,28 @@ function App() {
 
   return (
     <div className="container">
-      {/* Navbar */}
-      <nav className="navbar">
-        <div className="logo">Crave<span style={{ color: 'var(--primary-color)' }}>Find</span> <img src="/restaurant_menu.png" alt="" /></div>
-        <button className="cart-icon" onClick={() => setIsCartOpen(true)}>
-          🛒 {cartItems.length > 0 && <span className="cart-badge">{cartItems.length}</span>}
-        </button>
-      </nav>
+      <Navbar cartCount={cartItems.length} />
 
-      {/* Hero */}
-      <header className="hero">
-        <h1>Find your next craving</h1>
-        <div className="search-container">
-          <input type="text" placeholder="Search for food..." onChange={(e) => fetchMeals(e.target.value)} />
-        </div>
-      </header>
-
-      {/* التصنيفات */}
-      <div className="categories-bar">
-        {categories.map(cat => (
-          <button
-            key={cat}
-            className={`category-btn ${activeCat === cat ? 'active' : ''}`}
-            onClick={() => setActiveCat(cat)}
-          >
-            {cat}
-          </button>
-        ))}
-      </div>
-
-      <div className="section-header">
-        <h2>Recommended for you</h2>
-        <span className="view-all" onClick={handleViewAll}>View all</span>
-      </div>
-
-      {/* Grid الوجبات */}
-      <div className="grid">
-        {loading ? <p>Loading...</p> : meals.map(meal => (
-          <div className="card" key={meal.idMeal}>
-            <div className="img-wrapper">
-              <img src={meal.strMealThumb} alt={meal.strMeal} />
-              <div className="rating">⭐ {meal.rating}</div>
-            </div>
-            <div className="card-content">
-              <div className="card-header">
-                <h3>{meal.strMeal.substring(0, 15)}...</h3>
-                <span className="price">${meal.price}</span>
-              </div>
-              <button className="add-btn" onClick={() => addToCart(meal)}>Add to Cart</button>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* نافذة السلة Modal */}
-      {isCartOpen && (
-        <div className="modal-overlay">
-          <div className="cart-modal">
-            <h2>Your Cart 🛒</h2>
-            {cartItems.length === 0 ? <p>Your cart is empty</p> :
-              cartItems.map((item, index) => (
-                <div key={index} className="cart-item">
-                  <span>{item.strMeal}</span>
-                  <strong>${item.price}</strong>
-                </div>
-              ))
-            }
-            <div style={{ marginTop: '20px', borderTop: '2px solid #444', paddingTop: '10px' }}>
-              <strong>Total: ${cartItems.reduce((acc, item) => acc + item.price, 0)}</strong>
-            </div>
-            <button className="close-btn" onClick={() => setIsCartOpen(false)}>Close</button>
-          </div>
-        </div>
-      )}
+      <Routes>
+        <Route path="/" element={
+          <Home
+            meals={meals}
+            loading={loading}
+            activeCat={activeCat}
+            setActiveCat={setActiveCat}
+            categories={categories}
+            fetchMeals={fetchMeals}
+            addToCart={addToCart}
+            handleViewAll={handleViewAll}
+          />
+        } />
+        <Route path="/cart" element={
+          <CartPage
+            cartItems={cartItems}
+            setCartItems={setCartItems}
+          />
+        } />
+      </Routes>
     </div>
   )
 }
