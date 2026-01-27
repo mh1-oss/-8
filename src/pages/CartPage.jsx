@@ -87,7 +87,7 @@ const CartPage = ({ cartItems, setCartItems }) => {
                 <div className="order-item" key={item.idMeal}>
                     <img src={item.strMealThumb} className="order-img" alt="" />
                     <div className="order-details">
-                        <h4>{item.strMeal.substring(0, 15)}...</h4>
+                        <h4>{item.strMeal}</h4>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <div className="qty-controls">
                                 <button className="qty-btn" onClick={() => updateQuantity(item.idMeal, -1)}>−</button>

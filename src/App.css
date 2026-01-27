@@ -22,7 +22,6 @@ body {
   padding: 20px;
 }
 
-/* Navbar */
 .navbar {
   display: flex;
   justify-content: space-between;
@@ -298,11 +297,10 @@ body {
   background: var(--primary-color);
   color: white;
 }
-/* --- Checkout Page Styles --- */
 .checkout-container {
   max-width: 600px;
   margin: 0 auto;
-  padding-bottom: 100px; /* مسافة للزر السفلي */
+  padding-bottom: 100px; 
 }
 
 .checkout-header {
@@ -326,7 +324,6 @@ body {
   justify-content: center;
 }
 
-/* Section Styling */
 .section-title {
   font-size: 18px;
   font-weight: bold;
@@ -334,7 +331,6 @@ body {
   color: white;
 }
 
-/* Generic Dark Card */
 .dark-card {
   background: var(--input-bg);
   padding: 20px;
@@ -345,7 +341,6 @@ body {
   justify-content: space-between;
 }
 
-/* Address Section */
 .address-info {
   display: flex;
   align-items: center;
@@ -363,7 +358,6 @@ body {
   color: var(--primary-color);
 }
 
-/* Order Item Card (Horizontal) */
 .order-item {
   background: var(--input-bg);
   padding: 15px;
@@ -399,7 +393,7 @@ body {
 .qty-controls {
   display: flex;
   align-items: center;
-  background: #1a1614; /* Darker than card */
+  background: #1a1614; 
   width: fit-content;
   padding: 5px;
   border-radius: 12px;
@@ -415,7 +409,6 @@ body {
   width: 20px;
 }
 
-/* Payment Methods */
 .payment-grid {
   display: flex;
   gap: 15px;
@@ -451,7 +444,6 @@ body {
   font-size: 12px;
 }
 
-/* Bill Details */
 .bill-card {
   background: var(--input-bg);
   padding: 25px;
@@ -477,7 +469,6 @@ body {
   color: white;
 }
 
-/* Place Order Button */
 .place-order-btn {
   background: var(--primary-color);
   color: white;
@@ -498,7 +489,6 @@ body {
     color: white;
     transform: scale(1.02);
 }
-/* --- Receipt Modal Styles (تصميم الوصل) --- */
 .receipt-overlay {
   position: fixed;
   top: 0;
@@ -508,33 +498,21 @@ body {
   background: rgba(0, 0, 0, 0.85);
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: center; 
   z-index: 2000;
 }
 
 .receipt-paper {
-  background: #fff; /* ورق أبيض */
-  color: #000;      /* نص أسود */
+  background: #fff;
+  color: #000;
   width: 350px;
   padding: 30px;
-  font-family: 'Courier New', Courier, monospace; /* خط الفواتير */
+  font-family: 'Courier New', Courier, monospace;
   box-shadow: 0 0 20px rgba(0,0,0,0.5);
-  position: relative;
-  max-height: 90vh;
+  
+  max-height: 90vh; 
   overflow-y: auto;
-}
-
-/* تأثير الورقة المقطوعة من الأسفل (اختياري جمالي) */
-.receipt-paper::after {
-  content: "";
-  position: absolute;
-  bottom: -10px;
-  left: 0;
-  width: 100%;
-  height: 10px;
-  background: linear-gradient(45deg, transparent 33.333%, #fff 33.333%, #fff 66.667%, transparent 66.667%), 
-              linear-gradient(-45deg, transparent 33.333%, #fff 33.333%, #fff 66.667%, transparent 66.667%);
-  background-size: 20px 20px;
+  position: relative;
 }
 
 .receipt-header {
@@ -549,6 +527,7 @@ body {
   justify-content: space-between;
   margin-bottom: 8px;
   font-size: 14px;
+  page-break-inside: avoid;
 }
 
 .receipt-divider {
@@ -563,6 +542,7 @@ body {
   border-bottom: 2px solid #000;
   padding: 10px 0;
   margin: 15px 0;
+  page-break-inside: avoid;
 }
 
 .receipt-actions {
@@ -579,6 +559,13 @@ body {
   flex: 1;
   cursor: pointer;
   font-weight: bold;
+  transition: 0.3s;
+}
+
+.print-btn:hover {
+  background: #000;
+  color: #fff;
+  transform: scale(1.02);
 }
 
 .close-receipt-btn {
@@ -589,26 +576,52 @@ body {
   flex: 1;
   cursor: pointer;
   font-weight: bold;
+  transition: 0.3s;
 }
 
-/* إخفاء العناصر الأخرى عند الطباعة */
+.close-receipt-btn:hover {
+  background: #000;
+  color: #fff;
+  transform: scale(1.02);
+}
+
+
 @media print {
   body * {
     visibility: hidden;
+    height: 0;
   }
+
   .receipt-overlay, .receipt-paper, .receipt-paper * {
     visibility: visible;
+    height: auto;
   }
+
   .receipt-overlay {
     background: none;
     position: absolute;
     top: 0;
     left: 0;
+    display: block;
   }
+
+  .receipt-paper {
+    max-height: none;
+    overflow: visible;
+    
+    width: 100%;
+    max-width: 80mm;
+    margin: 0 auto;
+    padding: 10px 0;
+    box-shadow: none;
+    border: none;
+  }
+
   .receipt-actions {
-    display: none; /* إخفاء الأزرار في الورقة المطبوعة */
+    display: none; 
   }
 }
+
 @media (max-width: 768px) {
   .categories-bar {
     padding: 20px 10px;

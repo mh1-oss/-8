@@ -12,7 +12,7 @@ const MealList = ({ meals, loading, onAddToCart }) => {
                     </div>
                     <div className="card-content">
                         <div className="card-header">
-                            <h3>{meal.strMeal.substring(0, 15)}...</h3>
+                            <h3>{meal.strMeal}</h3>
                             <span className="price">${meal.price}</span>
                         </div>
                         <button className="add-btn" onClick={() => onAddToCart(meal)}>Add to Cart</button>
