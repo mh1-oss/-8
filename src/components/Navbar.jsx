@@ -11,7 +11,7 @@ const Navbar = ({ cartCount }) => {
                 </Link>
             </div>
             <Link to="/cart" className="cart-icon" style={{ textDecoration: 'none', color: 'white' }}>
-                🛒 {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
+                <img src="/Curve.png" alt="" /> {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
             </Link>
         </nav>
     );

@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react'
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, useLocation } from 'react-router-dom'
+import { AnimatePresence } from 'framer-motion'
 import './App.css'
 import Navbar from './components/Navbar'
 import Home from './pages/Home'
 import CartPage from './pages/CartPage'
+import RecipePage from './pages/RecipePage'
 
 function App() {
+  const location = useLocation();
   const [meals, setMeals] = useState([]);
   // Load cart from localStorage on initialization
   const [cartItems, setCartItems] = useState(() => {
@@ -88,26 +91,31 @@ function App() {
     <div className="container">
       <Navbar cartCount={cartItems.length} />
 
-      <Routes>
-        <Route path="/" element={
-          <Home
-            meals={meals}
-            loading={loading}
-            activeCat={activeCat}
-            setActiveCat={setActiveCat}
-            categories={categories}
-            fetchMeals={fetchMeals}
-            addToCart={addToCart}
-            handleViewAll={handleViewAll}
-          />
-        } />
-        <Route path="/cart" element={
-          <CartPage
-            cartItems={cartItems}
-            setCartItems={setCartItems}
-          />
-        } />
-      </Routes>
+      <AnimatePresence mode="wait">
+        <Routes location={location} key={location.pathname}>
+          <Route path="/" element={
+            <Home
+              meals={meals}
+              loading={loading}
+              activeCat={activeCat}
+              setActiveCat={setActiveCat}
+              categories={categories}
+              fetchMeals={fetchMeals}
+              addToCart={addToCart}
+              handleViewAll={handleViewAll}
+            />
+          } />
+          <Route path="/cart" element={
+            <CartPage
+              cartItems={cartItems}
+              setCartItems={setCartItems}
+            />
+          } />
+          <Route path="/meal/:id" element={
+            <RecipePage addToCart={addToCart} />
+          } />
+        </Routes>
+      </AnimatePresence>
     </div>
   )
 }

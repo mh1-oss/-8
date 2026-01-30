@@ -1,11 +1,11 @@
 
 import React from 'react';
 
-const MealList = ({ meals, loading, onAddToCart }) => {
+const MealList = ({ meals, loading, onAddToCart, onMealClick }) => {
     return (
         <div className="grid">
             {loading ? <p>Loading...</p> : meals.map(meal => (
-                <div className="card" key={meal.idMeal}>
+                <div className="card" key={meal.idMeal} onClick={() => onMealClick(meal)}>
                     <div className="img-wrapper">
                         <img src={meal.strMealThumb} alt={meal.strMeal} />
                         <div className="rating">⭐ {meal.rating}</div>
@@ -15,7 +15,10 @@ const MealList = ({ meals, loading, onAddToCart }) => {
                             <h3>{meal.strMeal}</h3>
                             <span className="price">${meal.price}</span>
                         </div>
-                        <button className="add-btn" onClick={() => onAddToCart(meal)}>Add to Cart</button>
+                        <button className="add-btn" onClick={(e) => {
+                            e.stopPropagation();
+                            onAddToCart(meal);
+                        }}>Add to Cart</button>
                     </div>
                 </div>
             ))}
