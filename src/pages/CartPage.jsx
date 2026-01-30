@@ -6,7 +6,7 @@ const CartPage = ({ cartItems, setCartItems }) => {
     const navigate = useNavigate();
 
     // --- State Management ---
-    const [paymentMethod, setPaymentMethod] = useState('credit'); 
+    const [paymentMethod, setPaymentMethod] = useState('credit');
     const [isEditingAddress, setIsEditingAddress] = useState(false);
     const [address, setAddress] = useState({
         label: 'Home',
@@ -38,7 +38,7 @@ const CartPage = ({ cartItems, setCartItems }) => {
     // دالة إتمام الطلب وتوليد الوصل
     const handlePlaceOrder = () => {
         if (cartItems.length === 0) return;
-        
+
         // توليد رقم طلب وتاريخ عشوائي
         setOrderId('#' + Math.floor(100000 + Math.random() * 900000));
         setOrderDate(new Date().toLocaleString());
@@ -62,77 +62,80 @@ const CartPage = ({ cartItems, setCartItems }) => {
                     <h1>Checkout</h1>
                 </div>
 
-                {/* Address Section */}
-                <h3 className="section-title">Delivery Address</h3>
-                <div className="dark-card">
-                    <div className="address-info" style={{ width: '100%' }}>
-                        <div className="icon-box">📍</div>
-                        {isEditingAddress ? (
-                            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '5px' }}>
-                                <input type="text" value={address.label} onChange={(e) => setAddress({ ...address, label: e.target.value })} style={inputStyle} />
-                                <input type="text" value={address.details} onChange={(e) => setAddress({ ...address, details: e.target.value })} style={inputStyle} />
+                <div className="checkout-grid">
+                    {/* Left Column: Address & Items */}
+                    <div className="checkout-left">
+                        <h3 className="section-title">Delivery Address</h3>
+                        <div className="dark-card">
+                            <div className="address-info" style={{ width: '100%' }}>
+                                <div className="icon-box">📍</div>
+                                {isEditingAddress ? (
+                                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                                        <input type="text" value={address.label} onChange={(e) => setAddress({ ...address, label: e.target.value })} style={inputStyle} />
+                                        <input type="text" value={address.details} onChange={(e) => setAddress({ ...address, details: e.target.value })} style={inputStyle} />
+                                    </div>
+                                ) : (
+                                    <div>
+                                        <div style={{ fontWeight: 'bold' }}>{address.label}</div>
+                                        <div style={{ fontSize: '12px', color: '#a0a0a0' }}>{address.details}</div>
+                                    </div>
+                                )}
                             </div>
-                        ) : (
-                            <div>
-                                <div style={{ fontWeight: 'bold' }}>{address.label}</div>
-                                <div style={{ fontSize: '12px', color: '#a0a0a0' }}>{address.details}</div>
-                            </div>
-                        )}
-                    </div>
-                    <div style={{ color: '#ff4500', cursor: 'pointer', marginLeft: '10px' }} onClick={() => setIsEditingAddress(!isEditingAddress)}>
-                        {isEditingAddress ? 'Save' : '✏️'}
-                    </div>
-                </div>
-
-                {/* Items */}
-                <h3 className="section-title">Order Summary</h3>
-                {cartItems.map(item => (
-                    <div className="order-item" key={item.idMeal}>
-                        <img src={item.strMealThumb} className="order-img" alt="" />
-                        <div className="order-details">
-                            <h4>{item.strMeal}</h4>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                <div className="qty-controls">
-                                    <button className="qty-btn" onClick={() => updateQuantity(item.idMeal, -1)}>−</button>
-                                    <span>{item.qty || 1}</span>
-                                    <button className="qty-btn" onClick={() => updateQuantity(item.idMeal, 1)}>+</button>
-                                </div>
-                                <span style={{ fontWeight: 'bold' }}>${(item.price * (item.qty || 1)).toFixed(2)}</span>
+                            <div style={{ color: '#ff4500', cursor: 'pointer', marginLeft: '10px' }} onClick={() => setIsEditingAddress(!isEditingAddress)}>
+                                {isEditingAddress ? 'Save' : '✏️'}
                             </div>
                         </div>
+
+                        <h3 className="section-title">Order Summary</h3>
+                        {cartItems.map(item => (
+                            <div className="order-item" key={item.idMeal}>
+                                <img src={item.strMealThumb} className="order-img" alt="" />
+                                <div className="order-details">
+                                    <h4>{item.strMeal}</h4>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <div className="qty-controls">
+                                            <button className="qty-btn" onClick={() => updateQuantity(item.idMeal, -1)}>−</button>
+                                            <span>{item.qty || 1}</span>
+                                            <button className="qty-btn" onClick={() => updateQuantity(item.idMeal, 1)}>+</button>
+                                        </div>
+                                        <span style={{ fontWeight: 'bold' }}>${(item.price * (item.qty || 1)).toFixed(2)}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
                     </div>
-                ))}
 
-                {/* Payment Methods (تم التعديل هنا) */}
-                <h3 className="section-title">Payment Method</h3>
-                <div className="payment-grid">
-                    <div className={`payment-card ${paymentMethod === 'credit' ? 'selected' : ''}`} onClick={() => setPaymentMethod('credit')}>
-                        {paymentMethod === 'credit' && <div className="check-mark">✓</div>}
-                        <div style={{ fontSize: '24px', marginBottom: '10px' }}>💳</div>
-                        <div style={{ fontWeight: 'bold' }}>Credit Card</div>
-                        <div style={{ fontSize: '12px', color: '#a0a0a0' }}>Pay With Card</div>
+                    {/* Right Column: Payment & Bill */}
+                    <div className="checkout-right">
+                        <h3 className="section-title">Payment Method</h3>
+                        <div className="payment-grid">
+                            <div className={`payment-card ${paymentMethod === 'credit' ? 'selected' : ''}`} onClick={() => setPaymentMethod('credit')}>
+                                {paymentMethod === 'credit' && <div className="check-mark">✓</div>}
+                                <div style={{ fontSize: '24px', marginBottom: '10px' }}>💳</div>
+                                <div style={{ fontWeight: 'bold' }}>Credit Card</div>
+                                <div style={{ fontSize: '12px', color: '#a0a0a0' }}>Pay With Card</div>
+                            </div>
+
+                            <div className={`payment-card ${paymentMethod === 'cash' ? 'selected' : ''}`} onClick={() => setPaymentMethod('cash')}>
+                                {paymentMethod === 'cash' && <div className="check-mark">✓</div>}
+                                <div style={{ fontSize: '24px', marginBottom: '10px' }}>💵</div>
+                                <div style={{ fontWeight: 'bold' }}>Cash</div>
+                                <div style={{ fontSize: '12px', color: '#a0a0a0' }}>Pay Cash</div>
+                            </div>
+                        </div>
+
+                        <div className="bill-card">
+                            <div className="bill-row"><span>Subtotal</span><span>${subtotal.toFixed(2)}</span></div>
+                            <div className="bill-row"><span>Delivery Fee</span><span>${deliveryFee}</span></div>
+                            <div className="bill-row"><span>Tax (8%)</span><span>${tax.toFixed(2)}</span></div>
+                            <div className="total-row"><span>Total</span><span style={{ color: 'var(--primary-color)' }}>${total.toFixed(2)}</span></div>
+
+                            <button className="place-order-btn" onClick={handlePlaceOrder}>
+                                <span>Place Order</span>
+                                <span>${total.toFixed(2)}</span>
+                            </button>
+                        </div>
                     </div>
-
-                    {/* خيار الدفع عند الاستلام */}
-                    <div className={`payment-card ${paymentMethod === 'cash' ? 'selected' : ''}`} onClick={() => setPaymentMethod('cash')}>
-                        {paymentMethod === 'cash' && <div className="check-mark">✓</div>}
-                        <div style={{ fontSize: '24px', marginBottom: '10px' }}>💵</div>
-                        <div style={{ fontWeight: 'bold' }}>Cash</div>
-                        <div style={{ fontSize: '12px', color: '#a0a0a0' }}>Pay Cash</div>
-                    </div>
-                </div>
-
-                {/* Totals & Button */}
-                <div className="bill-card">
-                    <div className="bill-row"><span>Subtotal</span><span>${subtotal.toFixed(2)}</span></div>
-                    <div className="bill-row"><span>Delivery Fee</span><span>${deliveryFee}</span></div>
-                    <div className="bill-row"><span>Tax (8%)</span><span>${tax.toFixed(2)}</span></div>
-                    <div className="total-row"><span>Total</span><span style={{ color: 'var(--primary-color)' }}>${total.toFixed(2)}</span></div>
-
-                    <button className="place-order-btn" onClick={handlePlaceOrder}>
-                        <span>Place Order</span>
-                        <span>${total.toFixed(2)}</span>
-                    </button>
                 </div>
 
                 {/* --- Receipt Modal (نافذة الوصل الحقيقي) --- */}

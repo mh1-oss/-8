@@ -88,35 +88,40 @@ function App() {
   };
 
   return (
-    <div className="container">
+    <>
       <Navbar cartCount={cartItems.length} />
 
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
           <Route path="/" element={
-            <Home
-              meals={meals}
-              loading={loading}
-              activeCat={activeCat}
-              setActiveCat={setActiveCat}
-              categories={categories}
-              fetchMeals={fetchMeals}
-              addToCart={addToCart}
-              handleViewAll={handleViewAll}
-            />
+            <div className="container">
+              <Home
+                meals={meals}
+                loading={loading}
+                activeCat={activeCat}
+                setActiveCat={setActiveCat}
+                categories={categories}
+                fetchMeals={fetchMeals}
+                addToCart={addToCart}
+                handleViewAll={handleViewAll}
+              />
+            </div>
           } />
           <Route path="/cart" element={
-            <CartPage
-              cartItems={cartItems}
-              setCartItems={setCartItems}
-            />
+            <div className="container">
+              <CartPage
+                cartItems={cartItems}
+                setCartItems={setCartItems}
+              />
+            </div>
           } />
           <Route path="/meal/:id" element={
+            /* RecipePage handles its own container-less layout */
             <RecipePage addToCart={addToCart} />
           } />
         </Routes>
       </AnimatePresence>
-    </div>
+    </>
   )
 }
 

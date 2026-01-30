@@ -38,6 +38,13 @@ body {
   padding: 15px max(20px, calc((100% - 1100px) / 2));
   box-sizing: border-box;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  transition: background 0.3s ease;
+}
+
+.navbar.transparent-navbar {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  box-shadow: none !important;
 }
 
 .cart-icon {
@@ -321,9 +328,33 @@ body {
 }
 
 .checkout-container {
-  max-width: 600px;
+  max-width: 1100px;
+  /* Allow full width */
   margin: 0 auto;
   padding-bottom: 100px;
+  padding-top: 40px !important;
+  /* Reduce space overrides global container */
+}
+
+.checkout-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+@media (min-width: 1024px) {
+  .checkout-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    /* 60% Left, 40% Right */
+    gap: 40px;
+    align-items: start;
+  }
+
+  .checkout-right {
+    position: sticky;
+    top: 120px;
+  }
 }
 
 .checkout-header {
@@ -331,6 +362,36 @@ body {
   align-items: center;
   gap: 20px;
   margin-bottom: 30px;
+}
+
+/* Floating Back Button */
+.back-btn-floating {
+  position: fixed !important;
+  /* Force fixed to stay on screen */
+  top: 20px;
+  left: 20px;
+  background: rgba(0, 0, 0, 0.5);
+  /* Darker bg for visibility */
+  backdrop-filter: blur(5px);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.3s;
+  z-index: 100 !important;
+  /* Above everything */
+}
+
+.back-btn-floating:hover {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+  transform: scale(1.1);
 }
 
 .back-btn {
@@ -1111,45 +1172,127 @@ body {
   }
 }
 
+/* --- Recipe Page Parallax --- */
+
+.parallax-wrapper {
+  position: relative;
+  min-height: 100vh;
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+.recipe-parallax-bg {
+  position: fixed !important;
+  /* Force to viewport top */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 60vh;
+  /* slightly reduced to match sheet raise */
+  background-size: cover;
+  background-position: center top;
+  /* Focus on top of image (food) */
+  z-index: 0;
+  will-change: transform;
+  /* Optimize performance */
+}
+
+.recipe-sheet-container {
+  margin-top: 50vh;
+  /* Raised the sheet up per request */
+  position: relative;
+  z-index: 10;
+  padding-bottom: 50px;
+}
+
+.recipe-sheet {
+  background: var(--bg-color);
+  border-radius: 40px 40px 0 0;
+  padding: 40px 20px;
+  min-height: 60vh;
+  box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.5);
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* Handle bar for visual cue */
+.sheet-handle {
+  width: 50px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  margin: -20px auto 30px;
+}
+
+.recipe-title-large {
+  text-align: center;
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+  color: var(--primary-color);
+}
+
+.sticky-nav-title {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 15px;
+  text-align: center;
+  background: rgba(18, 15, 14, 0.95);
+  backdrop-filter: blur(10px);
+  z-index: 15;
+  font-weight: bold;
+  font-size: 1.2rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Reuse existing clean styles */
+.recipe-meta.centered {
+  justify-content: center;
+  margin-bottom: 30px;
+}
+
+.action-row {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 40px;
+}
+
+.add-btn.large-btn {
+  width: auto;
+  padding: 15px 50px;
+  font-size: 1.2rem;
+  border-radius: 50px;
+}
+
+.ingredients-section-clean {
+  margin-bottom: 40px;
+}
+
+.ingredients-section-clean h3,
+.instructions-section-clean h3 {
+  color: var(--primary-color);
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.instructions-text-clean {
+  line-height: 1.8;
+  font-size: 1.1rem;
+  color: #e0e0e0;
+}
+
+.instructions-text-clean p {
+  margin-bottom: 20px;
+}
+
+/* Clean up old styles override */
 @media (min-width: 1024px) {
+
+  /* Reset grid styles just in case */
   .recipe-page {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    /* More space for text */
-    gap: 40px;
-    align-items: start;
-  }
-
-  .recipe-page .back-btn {
-    grid-column: 1 / -1;
-  }
-
-  /* Image & Ingredients on Right (Sticky) */
-  .recipe-hero {
-    order: 2;
-    flex-direction: column !important;
-    margin-bottom: 0;
-    position: sticky;
-    top: 120px;
-    /* Stick below navbar */
-  }
-
-  .recipe-img {
-    max-width: 100%;
-    margin-bottom: 20px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-  }
-
-  /* Instructions on Left (Natural Scroll) */
-  .instructions-section {
-    order: 1;
-    position: static;
-    /* Let it flow naturally */
-  }
-
-  .instructions-text {
-    max-height: none;
-    /* Remove internal scroll */
-    overflow: visible;
+    display: block;
   }
 }

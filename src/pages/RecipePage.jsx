@@ -1,12 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import PageTransition from '../components/PageTransition';
+import { motion, useScroll, useTransform } from 'framer-motion';
 
 const RecipePage = ({ addToCart }) => {
     const { id } = useParams();
     const navigate = useNavigate();
     const [meal, setMeal] = useState(null);
+
     const [loading, setLoading] = useState(true);
+    // Removed containerRef as we want window scroll
+
+    const { scrollY } = useScroll(); // Use window scroll
+    // Fixed positioning means we need to translate smoothly UP to create parallax
+    const imageY = useTransform(scrollY, [0, 500], [0, -150]); // Move up naturally but slower than scroll
+    const imageOpacity = useTransform(scrollY, [0, 300], [1, 0.2]);
+    const imageBlur = useTransform(scrollY, [0, 300], ["0px", "10px"]);
+    const headerTitleOpacity = useTransform(scrollY, [250, 350], [0, 1]);
 
     useEffect(() => {
         fetch(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${id}`)
@@ -43,54 +53,67 @@ const RecipePage = ({ addToCart }) => {
     };
 
     return (
-        <PageTransition>
-            <div className="container recipe-page">
-                <button className="back-btn" onClick={() => navigate(-1)} style={{ marginBottom: '20px' }}>
-                    <span style={{ fontSize: '20px' }}>←</span>
-                </button>
+        <div className="parallax-wrapper">
+            {/* Motion Parallax Background */}
+            <motion.div
+                className="recipe-parallax-bg"
+                style={{
+                    backgroundImage: `url(${meal.strMealThumb})`,
+                    y: imageY,
+                    opacity: imageOpacity, // Restored fade for polish
+                    zIndex: 1
+                }}
+            />
 
-                <div className="recipe-hero">
-                    <img src={meal.strMealThumb} alt={meal.strMeal} className="recipe-img" />
-                    <div className="recipe-info">
-                        <h1>{meal.strMeal}</h1>
-                        <div className="recipe-meta">
-                            <span className="price-tag">${meal.price}</span>
-                            <span className="rating-tag">⭐ {meal.rating}</span>
-                            <span className="category-tag">{meal.strCategory}</span>
-                        </div>
+                
+
+            {/* Scrollable Content Sheet */}
+            <div className="recipe-sheet-container" style={{ position: 'relative', zIndex: 10 }}>
+                <div className="recipe-sheet">
+                    <div className="sheet-handle"></div>
+
+                    <h1 className="recipe-title-large">{meal.strMeal}</h1>
+
+                    <div className="recipe-meta centered">
+                        <span className="price-tag">${meal.price}</span>
+                        <span className="rating-tag">⭐ {meal.rating}</span>
+                        <span className="category-tag">{meal.strCategory}</span>
+                    </div>
+
+                    <div className="action-row">
                         <button className="add-btn large-btn" onClick={() => addToCart(meal)}>
                             Add to Cart
                         </button>
-
-                        <div className="ingredients-section">
-                            <h3>Ingredients</h3>
-                            <ul className="ingredients-grid">
-                                {getIngredients().map((ing, idx) => (
-                                    <li key={idx}>{ing}</li>
-                                ))}
-                            </ul>
-                        </div>
                     </div>
-                </div>
 
-                <div className="instructions-section">
-                    <h3>Instructions</h3>
-                    <div className="instructions-text">
-                        {meal.strInstructions.split('\r\n').map((step, idx) => (
-                            step.trim() && <p key={idx}>{step}</p>
-                        ))}
+                    <div className="ingredients-section-clean">
+                        <h3>Ingredients</h3>
+                        <ul className="ingredients-grid">
+                            {getIngredients().map((ing, idx) => (
+                                <li key={idx}>{ing}</li>
+                            ))}
+                        </ul>
                     </div>
-                    {meal.strYoutube && (
-                        <div className="video-section">
-                            <h3>Video Tutorial</h3>
-                            <a href={meal.strYoutube} target="_blank" rel="noopener noreferrer" className="video-link">
-                                Watch on YouTube
-                            </a>
+
+                    <div className="instructions-section-clean">
+                        <h3>Instructions</h3>
+                        <div className="instructions-text-clean">
+                            {meal.strInstructions.split('\r\n').map((step, idx) => (
+                                step.trim() && <p key={idx}>{step}</p>
+                            ))}
                         </div>
-                    )}
+                        {meal.strYoutube && (
+                            <div className="video-section">
+                                <h3>Video Tutorial</h3>
+                                <a href={meal.strYoutube} target="_blank" rel="noopener noreferrer" className="video-link">
+                                    Watch on YouTube
+                                </a>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
-        </PageTransition>
+        </div>
     );
 };
 
